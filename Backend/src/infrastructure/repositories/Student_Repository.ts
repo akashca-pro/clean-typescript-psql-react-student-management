@@ -1,4 +1,4 @@
-import { IStudent_Repository } from '@/domain/repositories/student_repository';
+import { IStudent_Repository } from '@/domain/repositories/studentRepository';
 import { Public_Student, Student } from '@/domain/entities/Student';
 import { pool } from '../database';
 

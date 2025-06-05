@@ -1,4 +1,4 @@
-import { IStudent_Repository } from '@/domain/repositories/Student_Repository'
+import { IStudent_Repository } from '@/domain/repositories/studentRepository'
 import { Student, Public_Student } from '@/domain/entities/Student'
 import { IAuth_Service } from '@/domain/services/IAuth_Services'
 
@@ -12,9 +12,9 @@ export class Student_Usecase {
         return this.student_repo.getAll();
     }
 
-    async getById(id : number) : Promise<Public_Student | null> {
+    async getById(id : number) : Promise<Public_Student | null> { 
         return this.getById(id);
-    }
+    } 
 
     async create(student : Omit<Student,'id'>) : Promise<Public_Student> {
         const hashed_password = await this.auth_service.hash_password(student.password);

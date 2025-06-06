@@ -1,12 +1,15 @@
-import { Request, Response } from "express";
+import { Response } from "express";
+import { CustomRequest, TokenValue } from "@/utils/Interfaces";
 import { Student_Usecase } from "@/application/usecases/Student_usecase";
 import { Student_Repository } from "@/infrastructure/repositories/Student_Repository";
 import { AuthService } from "@/infrastructure/services/Auth_Services";
 import { validationResult } from 'express-validator';
+import { Token_Usecase } from "@/application/usecases/Token_usecase";
 
-const use_case = new Student_Usecase(new Student_Repository, new AuthService);
+const student_use_case = new Student_Usecase(new Student_Repository(), new AuthService());
+const token_use_case = new Token_Usecase(new AuthService());
 
-export const signup = async (req : Request,res : Response) : Promise<void> => {
+export const signup = async (req : CustomRequest,res : Response) : Promise<void> => {
     try {
 
         const errors = validationResult(req);
@@ -18,18 +21,18 @@ export const signup = async (req : Request,res : Response) : Promise<void> => {
 
         const { name, email, password } = req.body;
 
-        const alreadyExist = await use_case.findByEmail(email);
+        const alreadyExist = await student_use_case.findByEmail(email);
 
         if(alreadyExist){
             res.status(407).json({message : 'Account already exist'})
             return
         }
 
-        const student_details = await use_case.create({
+        const student_details = await student_use_case.create({
             name,email,password
         });
 
-        const token = use_case.generate_token({ 
+        const token = token_use_case.generate_token({ 
             id : student_details.id, email : student_details.email })
 
         res.cookie('token',token,{
@@ -48,25 +51,25 @@ export const signup = async (req : Request,res : Response) : Promise<void> => {
 
 }
 
-export const login = async (req : Request, res : Response) : Promise<void> =>{
+export const login = async (req : CustomRequest, res : Response) : Promise<void> =>{
     
     try {
         
         const { email, password } = req.body;
         
-        const user = await use_case.findByEmail(email);
+        const user = await student_use_case.findByEmail(email);
 
         if(!user){
             res.status(404).json({ message : 'Uh oh , Account not found ' })
             return;
         }
 
-        if(!await use_case.compare_password(password, user.password)){
+        if(!await student_use_case.compare_password(password, user.password)){
             res.status(400).json({ message : 'Incorrect Password' });
             return;
         }
 
-        const token = use_case.generate_token({ id : user.id, email : user.email })
+        const token = token_use_case.generate_token({ id : user.id, email : user.email })
 
         res.cookie('token',token,{
             httpOnly : true,

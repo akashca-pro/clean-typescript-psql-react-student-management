@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
-import Jwt,{JwtPayload} from 'jsonwebtoken';
+import { TokenValue } from '@/utils/Interfaces';
+import Jwt from 'jsonwebtoken';
 import { IAuth_Service  } from '@/domain/services/IAuth_Services';
 
 export class AuthService implements IAuth_Service {
@@ -16,9 +17,9 @@ export class AuthService implements IAuth_Service {
         return Jwt.sign(payload, process.env.JWT_SECRET!, { expiresIn: '24h' });
     }
 
-    verify_token(token: string): JwtPayload | null {
+    verify_token(token: string): TokenValue | null {
         try {
-        const decoded = Jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+        const decoded = Jwt.verify(token, process.env.JWT_SECRET!) as TokenValue;
         return typeof decoded === "object" ? decoded : null;
         } catch (error) {
             return null

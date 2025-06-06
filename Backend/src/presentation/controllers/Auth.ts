@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { CustomRequest, TokenValue } from "@/utils/Interfaces";
+import { CustomRequest } from "@/utils/Interfaces";
 import { Student_Usecase } from "@/application/usecases/Student_usecase";
 import { Student_Repository } from "@/infrastructure/repositories/Student_Repository";
 import { AuthService } from "@/infrastructure/services/Auth_Services";
@@ -87,3 +87,21 @@ export const login = async (req : CustomRequest, res : Response) : Promise<void>
 
 }
 
+export const logout = async (req : CustomRequest, res : Response) => {
+    
+    try {
+
+    res.cookie('token', "", { 
+        httpOnly: true,  
+        sameSite: 'strict', 
+        expires: new Date(0) 
+    });
+
+    res.status(200).json({ message : 'Logout success' });
+        
+    } catch (error) {
+        console.log('Logout error',error);
+        res.status(500).json('Internal server error');
+    }
+
+}

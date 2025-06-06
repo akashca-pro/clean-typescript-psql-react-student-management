@@ -4,13 +4,13 @@ import { validateSignup, validateLogin } from '@/presentation/middlewares/valida
 import { verify_token } from "../middlewares/verifyToken";
 import { deleteProfile, loadProfile, updateProfile } from "../controllers/crud";
 
-
-
 const router = Router();
 
 router.post('/signup', validateSignup, signup);
 
 router.post('/login', validateLogin, login);
+
+router.delete('/logout', verify_token , )
 
 router.get('/profile', verify_token, loadProfile)
 

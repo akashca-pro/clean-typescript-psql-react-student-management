@@ -4,6 +4,7 @@ dotenv.config();
 import cookieParser from 'cookie-parser';
 import studentRouter from '@/presentation/routes/student_routes'
 import { connectDB } from '@/infrastructure/database/index';
+import { errorHandler, notFound } from './presentation/middlewares/errorHandling';
 
 connectDB();
 
@@ -14,6 +15,9 @@ app.use(cookieParser());
 app.use(express.urlencoded({extended : true}));
 
 app.use('/api', studentRouter);
+
+app.use(notFound);
+app.use(errorHandler);
 
 app.listen(process.env.PORT || 3000,()=>{
     console.log(`Server running on http://localhost:${process.env.PORT}`)

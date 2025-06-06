@@ -12,7 +12,7 @@ export class Student_Usecase {
         return this.student_repo.getAll();
     }
 
-    async getById(id : number) : Promise<Public_Student | null> { 
+    async getById(id : number) : Promise<Student | null> { 
         return this.student_repo.getById(id);
     } 
 

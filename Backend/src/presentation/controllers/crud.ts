@@ -10,7 +10,7 @@ export const loadProfile = async (req : CustomRequest , res : Response) : Promis
 
     try {
         
-        const id = req.user?.id 
+        const id = req.user?.id; 
 
         if (!id) {
             res.status(401).json({ message: "Unauthorized: No user ID found" });

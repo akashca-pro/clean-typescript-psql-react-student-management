@@ -8,7 +8,6 @@ const token_use_case = new Token_Usecase(new AuthService());
 export const verify_token = async ( req: CustomRequest, res : Response, next : NextFunction ) => {
     
     try {
-
         const token = req.cookies['token'];
         if(!token){
             res.status(401).json({ message : 'Unauthorized' });

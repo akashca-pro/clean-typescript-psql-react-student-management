@@ -74,3 +74,32 @@ export const updateProfile = async (req:CustomRequest, res : Response) : Promise
     }
 
 }
+
+export const deleteProfile = async (req : CustomRequest, res : Response) : Promise<void> => {
+    
+    try {
+        
+        const id = req.user?.id;
+
+        if (!id) {
+            res.status(401).json({ message: "Unauthorized: No user ID found" });
+            return;
+        }
+
+        const user = await use_case.getById(id);
+ 
+        if(!user){
+            res.status(404).json({ message: " User not found" });
+            return;
+        }
+
+        await use_case.delete(id);
+
+        res.status(200).json({ message : 'Profile deleted successfully' })
+
+    } catch (error) {
+        console.log('deleteProfile',error);
+        res.status(500).json({ message : 'Internal server error' });
+    }
+
+}

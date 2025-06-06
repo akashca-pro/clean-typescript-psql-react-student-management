@@ -2,11 +2,20 @@ import { Request, Response } from "express";
 import { Student_Usecase } from "@/application/usecases/Student_usecase";
 import { Student_Repository } from "@/infrastructure/repositories/Student_Repository";
 import { AuthService } from "@/infrastructure/services/Auth_Services";
+import { validationResult } from 'express-validator';
 
 const use_case = new Student_Usecase(new Student_Repository, new AuthService);
 
 export const signup = async (req : Request,res : Response) : Promise<void> => {
     try {
+
+        const errors = validationResult(req);
+
+        if(!errors.isEmpty()){
+            res.status(400).json({ errors : errors.array() })
+            return;
+        }
+
         const { name, email, password } = req.body;
 
         const alreadyExist = await use_case.findByEmail(email);
@@ -31,8 +40,6 @@ export const signup = async (req : Request,res : Response) : Promise<void> => {
         })
 
         res.status(201).json({ message : 'Account created successfully' });
-
-        return;
 
     } catch (error) {
         res.status(500).json('Internal server error');

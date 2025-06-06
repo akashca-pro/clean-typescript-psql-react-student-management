@@ -16,8 +16,12 @@ export class Student_Repository implements IStudent_Repository {
         return res.rows[0] || null;
     }
 
-    async create(student: Omit<Student, 'id'>): Promise<Public_Student> {
+    async findByEmail(email : string) : Promise<Public_Student | null> {
+        const res = await pool.query('SELECT id,name,email FROM students WHERE email = $1',[email])
+        return res.rows[0] || null;   
+    }
 
+    async create(student: Omit<Student, 'id'>): Promise<Public_Student> {
         const res = await pool.query(
             'INSERT INTO students (name,email,password) values ($1, $2, $3) RETURNING id, name, email',
             [student.name, student.email, student.password]

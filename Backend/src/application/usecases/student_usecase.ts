@@ -17,7 +17,7 @@ export class Student_Usecase {
         return this.student_repo.getById(id);
     } 
 
-    async findByEmail(email : string) : Promise<Public_Student | null> {
+    async findByEmail(email : string) : Promise<Student | null> {
         return this.student_repo.findByEmail(email);
     }
 
@@ -32,6 +32,10 @@ export class Student_Usecase {
 
     verify_token(token : string) : JwtPayload | string | null{
         return this.auth_service.verify_token(token);
+    }
+
+    async compare_password(raw : string, hashed : string) : Promise<boolean> {
+        return this.auth_service.compare_password(raw,hashed);
     }
 
     async update(id : number, student : Partial<Omit<Student, 'id' | 'password'>>) : Promise<Public_Student | null> {

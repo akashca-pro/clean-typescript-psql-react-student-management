@@ -16,7 +16,7 @@ export class Student_Repository implements IStudent_Repository {
         return res.rows[0] || null;
     }
 
-    async findByEmail(email : string) : Promise<Public_Student | null> {
+    async findByEmail(email : string) : Promise<Student | null> {
         const res = await pool.query('SELECT id,name,email FROM students WHERE email = $1',[email])
         return res.rows[0] || null;   
     }

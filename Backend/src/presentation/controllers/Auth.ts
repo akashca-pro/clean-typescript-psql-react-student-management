@@ -42,7 +42,45 @@ export const signup = async (req : Request,res : Response) : Promise<void> => {
         res.status(201).json({ message : 'Account created successfully' });
 
     } catch (error) {
+        console.log('Signup error',error)
         res.status(500).json('Internal server error');
     }
 
 }
+
+export const login = async (req : Request, res : Response) : Promise<void> =>{
+    
+    try {
+        
+        const { email, password } = req.body;
+        
+        const user = await use_case.findByEmail(email);
+
+        if(!user){
+            res.status(404).json({ message : 'Uh oh , Account not found ' })
+            return;
+        }
+
+        if(!await use_case.compare_password(password, user.password)){
+            res.status(400).json({ message : 'Incorrect Password' });
+            return;
+        }
+
+        const token = use_case.generate_token({ id : user.id, email : user.email })
+
+        res.cookie('token',token,{
+            httpOnly : true,
+            sameSite : 'strict',
+            secure : true,
+            maxAge : 24 * 60 * 60 * 1000
+        })
+        
+        res.status(200).json({ message : 'Login Successfull' });
+
+    } catch (error) {
+        console.log('Login error',error);
+        res.status(500).json('Internal server error');
+    }
+
+}
+

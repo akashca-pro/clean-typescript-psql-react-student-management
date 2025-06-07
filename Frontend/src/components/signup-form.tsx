@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 
 import { useState } from "react"
@@ -54,8 +52,7 @@ export function SignupForm({ onSwitchToLogin }: SignupFormProps) {
 
     setIsLoading(true)
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    
 
     setIsLoading(false)
     setSuccess(true)

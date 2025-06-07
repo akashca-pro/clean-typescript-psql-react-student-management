@@ -30,7 +30,7 @@ export const loadProfile = async (req : CustomRequest , res : Response) : Promis
             name : user?.name
         }
 
-        res.status(200).json({ data : response });
+        res.status(200).json({ message : 'Load profile successfull', data : response });
 
     } catch (error) {
         console.log('loadProfile',error);

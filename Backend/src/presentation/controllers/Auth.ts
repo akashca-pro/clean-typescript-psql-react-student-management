@@ -28,19 +28,9 @@ export const signup = async (req : CustomRequest,res : Response) : Promise<void>
             return
         }
 
-        const student_details = await student_use_case.create({
+        await student_use_case.create({
             name,email,password
         });
-
-        const token = token_use_case.generate_token({ 
-            id : student_details.id, email : student_details.email })
-
-        res.cookie('token',token,{
-            httpOnly : true,
-            sameSite : 'strict',
-            secure : true,
-            maxAge : 24 * 60 * 60 * 1000
-        })
 
         res.status(201).json({ data : name, message : 'Account created successfully' });
 
@@ -78,7 +68,7 @@ export const login = async (req : CustomRequest, res : Response) : Promise<void>
             maxAge : 24 * 60 * 60 * 1000
         })
         
-        res.status(200).json({ message : 'Login Successfull' });
+        res.status(200).json({ data : {name : user.name, email : user.email}, message : 'Login Successfull' });
 
     } catch (error) {
         console.log('Login error',error);

@@ -1,12 +1,14 @@
 import { body } from "express-validator";
 
-const baseValidation = [
+const emailValidation = [
   body("email")
     .trim()
     .notEmpty().withMessage("Email is required")
     .isEmail().withMessage("Invalid email format")
     .matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/).withMessage("Invalid email structure"),
+];
 
+const passwordValidation = [
   body("password")
     .trim()
     .notEmpty().withMessage("Password is required")
@@ -17,13 +19,26 @@ const baseValidation = [
     .matches(/[!@#$%^&*]/).withMessage("Password must contain at least one special character"),
 ];
 
-export const validateSignup = [
-  body("name")
+const nameValidation = [
+    body("name")
     .trim()
     .notEmpty().withMessage("Name is required")
     .isLength({ min: 3, max: 50 }).withMessage("Name must be between 3 and 50 characters")
-    .matches(/^[a-zA-Z\s]+$/).withMessage("Name must contain only letters"),
-  ...baseValidation
+    .matches(/^[a-zA-Z\s]+$/).withMessage("Name must contain only letters")
 ];
 
-export const validateLogin = [...baseValidation]
+export const validateSignup = [
+  ...nameValidation,
+  ...emailValidation,
+  ...passwordValidation,
+];
+
+export const validateLogin = [
+  ...emailValidation,
+  ...passwordValidation
+];
+
+export const validateUpdation = [
+  ...nameValidation,
+  ...emailValidation
+];

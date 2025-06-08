@@ -1,36 +1,28 @@
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import type { Student } from "@/lib/students"
-import { X, Save, User, Mail, Calendar } from "lucide-react"
+import { X, Save, User, Mail } from "lucide-react"
+import type { Student } from "@/api/axios"
+import { toast } from "sonner"
+import { updateProfile } from '@/api/crud'
 
 interface StudentEditModalProps {
   student: Student
   isOpen: boolean
   onClose: () => void
-  onSave: (student: Student) => void
 }
 
-export function StudentEditModal({ student, isOpen, onClose, onSave }: StudentEditModalProps) {
+export function StudentEditModal({ student, isOpen, onClose }: StudentEditModalProps) {
   const [formData, setFormData] = useState({
     name: student.name,
     email: student.email,
-    age: student.age.toString(),
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
-
-  useEffect(() => {
-    setFormData({
-      name: student.name,
-      email: student.email,
-      age: student.age.toString(),
-    })
-  }, [student])
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
@@ -45,28 +37,39 @@ export function StudentEditModal({ student, isOpen, onClose, onSave }: StudentEd
       newErrors.email = "Email is invalid"
     }
 
-    const age = Number.parseInt(formData.age)
-    if (!formData.age || isNaN(age) || age < 1 || age > 120) {
-      newErrors.age = "Please enter a valid age (1-120)"
-    }
-
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!validateForm()) return
 
-    const updatedStudent: Student = {
-      ...student,
-      name: formData.name.trim(),
-      email: formData.email.trim(),
-      age: Number.parseInt(formData.age),
+const toastId = toast.loading('Please wait . . .');
+
+    try {
+      await updateProfile(formData)
+      toast.success('Updated Profile',{
+        id : toastId
+      });
+      onClose();
+    } catch (error : any) {
+      console.log(error);
+      const validationErrors = error?.response?.data?.errors;
+      if (validationErrors && Array.isArray(validationErrors)) {
+        toast.dismiss(toastId);
+        validationErrors.forEach((err: any) => {
+          toast.error(err.msg || 'Validation error');
+        });
+      }else{
+        toast.error('Error',{
+          description : error?.response?.data?.message,
+          id : toastId
+        })
+      }
     }
 
-    onSave(updatedStudent)
   }
 
   const handleInputChange = (field: string, value: string) => {
@@ -161,35 +164,6 @@ export function StudentEditModal({ student, isOpen, onClose, onSave }: StudentEd
                     </motion.p>
                   )}
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="edit-age" className="text-sm font-medium text-gray-700">
-                    Age
-                  </Label>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="edit-age"
-                      type="number"
-                      placeholder="Enter age"
-                      value={formData.age}
-                      onChange={(e) => handleInputChange("age", e.target.value)}
-                      className={`pl-10 ${errors.age ? "border-red-500" : ""}`}
-                      min="1"
-                      max="120"
-                    />
-                  </div>
-                  {errors.age && (
-                    <motion.p
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="text-sm text-red-600"
-                    >
-                      {errors.age}
-                    </motion.p>
-                  )}
-                </div>
-
                 <div className="flex gap-3 pt-4">
                   <Button type="button" variant="outline" onClick={onClose} className="flex-1">
                     Cancel

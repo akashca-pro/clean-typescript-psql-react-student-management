@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 
 import { useState } from "react"
@@ -11,6 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, LogIn, Mail, Lock, AlertCircle } from "lucide-react"
 import { useAuth } from "@/lib/auth"
+import { login } from '@/api/auth'
+import { toast } from "sonner"
 
 interface LoginFormProps {
   onSwitchToSignup: () => void
@@ -24,7 +24,7 @@ export function LoginForm({ onSwitchToSignup }: LoginFormProps) {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isLoading, setIsLoading] = useState(false)
   const [loginError, setLoginError] = useState("")
-  const { login } = useAuth()
+  const { login : loginAuth } = useAuth()
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
@@ -51,14 +51,29 @@ export function LoginForm({ onSwitchToSignup }: LoginFormProps) {
     setIsLoading(true)
     setLoginError("")
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+  const toastId = toast.loading('Please wait . . .');
 
-    // Simulate login validation (accept any email/password for demo)
-    if (formData.email && formData.password) {
-      login(formData.email)
-    } else {
-      setLoginError("Invalid email or password")
+    try {
+      const res = await login(formData)
+      toast.success('Login success',{
+        description : `HI ${res.data?.name}`,
+        id : toastId
+      });
+      loginAuth(res.data?.email || 'user')
+    } catch (error : any) {
+      console.log(error);
+      const validationErrors = error?.response?.data?.errors;
+      if (validationErrors && Array.isArray(validationErrors)) {
+        toast.dismiss(toastId);
+        validationErrors.forEach((err: any) => {
+          toast.error(err.msg || 'Validation error');
+        });
+      }else{
+        toast.error('Error',{
+          description : error?.response?.data?.message,
+          id : toastId
+        })
+      }
     }
 
     setIsLoading(false)

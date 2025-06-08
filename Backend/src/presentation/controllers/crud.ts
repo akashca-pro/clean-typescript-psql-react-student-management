@@ -59,8 +59,8 @@ export const updateProfile = async (req:CustomRequest, res : Response) : Promise
 
         const alreadyExist = await use_case.findByEmail(email);
 
-        if(alreadyExist?.email === email){
-            res.status(407).json({ message : 'Email already exist' });
+        if(alreadyExist && alreadyExist?.email !== user.email){
+            res.status(409).json({ message : 'Another user with this email exist' });
             return;
         }
 

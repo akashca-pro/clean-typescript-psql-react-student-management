@@ -74,7 +74,7 @@ export function SignupForm({ onSwitchToLogin }: SignupFormProps) {
         });
       }else{
         toast.error('Error',{
-          description : error?.message,
+          description : error?.response?.data?.message,
           id : toastId
         })
       }

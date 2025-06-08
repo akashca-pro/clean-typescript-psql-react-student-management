@@ -1,12 +1,24 @@
-"use client"
-
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/lib/auth"
 import { LogOut, GraduationCap } from "lucide-react"
+import { logout } from '@/api/auth'
+import { toast } from "sonner"
 
 export function Navbar() {
-  const { user, logout } = useAuth()
+  const { user, logout : logoutAuth } = useAuth()
+
+  const handleLogout = async ():Promise<void> =>{
+      const toastId = toast.loading('Please wait. . .');
+      try {
+        await logout();
+        toast.success('Logout success',{id : toastId});
+        logoutAuth();
+      } catch (error : any) {
+        console.log(error);
+        toast.error(error?.response?.message,{id : toastId});
+      }
+  }
 
   return (
     <motion.nav
@@ -35,7 +47,7 @@ export function Navbar() {
             <Button
               variant="outline"
               size="sm"
-              onClick={logout}
+              onClick={handleLogout}
               className="hover:bg-red-50 hover:border-red-200 hover:text-red-600 transition-colors"
             >
               <LogOut className="w-4 h-4 mr-2" />

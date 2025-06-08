@@ -38,7 +38,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <Toaster position="top-right" richColors/>
+      <Toaster richColors/>
       <AnimatePresence mode="wait">
         {currentPage === "signup" && (
           <motion.div

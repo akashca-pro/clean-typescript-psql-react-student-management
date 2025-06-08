@@ -10,6 +10,7 @@ import { X, Save, User, Mail } from "lucide-react"
 import type { Student } from "@/api/axios"
 import { toast } from "sonner"
 import { updateProfile } from '@/api/crud'
+import { useAuth } from '@/lib/auth'
 
 interface StudentEditModalProps {
   student: Student
@@ -18,6 +19,7 @@ interface StudentEditModalProps {
 }
 
 export function StudentEditModal({ student, isOpen, onClose }: StudentEditModalProps) {
+  const { login } = useAuth()
   const [formData, setFormData] = useState({
     name: student.name,
     email: student.email,
@@ -53,6 +55,7 @@ const toastId = toast.loading('Please wait . . .');
       toast.success('Updated Profile',{
         id : toastId
       });
+      login(formData?.email)
       onClose();
     } catch (error : any) {
       console.log(error);

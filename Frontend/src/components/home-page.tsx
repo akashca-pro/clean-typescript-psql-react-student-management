@@ -1,17 +1,20 @@
 import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from 
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from 
 "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Navbar } from "@/components/navbar"
 import { StudentEditModal } from "@/components/student-edit-modal"
-import { Users, Edit, Mail, } from "lucide-react"
+import { Users, Edit, Mail, Trash2 } from "lucide-react"
 import type { Student } from "@/api/axios"
-import { loadProfile } 
+import { loadProfile,deleteProfile } 
 from '@/api/crud'
+import { useAuth } from '@/lib/auth'
+import { toast } from "sonner"
 
 export function HomePage() {
+  const { logout } = useAuth()
   const [studentDetails, setStudentDetails] = useState<Student>({
     name : '',
     email : ''
@@ -34,6 +37,20 @@ useEffect(() => {
 
   fetchStudent()
 }, [studentDetails])
+
+const handleDelete = async () => {
+    const toastId = toast.loading('Please wait . . . ');
+    try {
+      await deleteProfile()
+      logout();
+      toast.success('Account deletion success',{
+        id : toastId
+      })
+    } catch (error : any) {
+      console.log(error);
+      toast.error(error?.response?.data?.message,{id : toastId});
+    }
+}
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -115,6 +132,12 @@ useEffect(() => {
                     <span className="text-sm">{studentDetails?.email}</span>
                   </div>
                 </CardContent>
+                <CardFooter>
+                  <Button className="bg-red-500 hover:bg-red-600" 
+                  onClick={handleDelete}>
+                    <Trash2/> Delete Account
+                  </Button>
+                </CardFooter>
               </Card>
             </motion.div>
         </motion.div>

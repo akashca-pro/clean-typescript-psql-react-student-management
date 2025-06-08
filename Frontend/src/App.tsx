@@ -4,6 +4,7 @@ import { LoginForm } from "@/components/login-form"
 import { HomePage } from "@/components/home-page"
 import { useAuth } from "@/lib/auth"
 import { motion, AnimatePresence } from "framer-motion"
+import { Toaster } from 'sonner'
 
 type Page = "login" | "signup" | "home"
 
@@ -37,6 +38,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <Toaster position="top-right" richColors/>
       <AnimatePresence mode="wait">
         {currentPage === "signup" && (
           <motion.div

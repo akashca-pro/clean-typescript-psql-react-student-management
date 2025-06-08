@@ -24,7 +24,7 @@ export const signup = async (req : CustomRequest,res : Response) : Promise<void>
         const alreadyExist = await student_use_case.findByEmail(email);
 
         if(alreadyExist){
-            res.status(407).json({message : 'Account already exist'})
+            res.status(409).json({message : 'Account already exist'})
             return
         }
 
@@ -42,11 +42,11 @@ export const signup = async (req : CustomRequest,res : Response) : Promise<void>
             maxAge : 24 * 60 * 60 * 1000
         })
 
-        res.status(201).json({ message : 'Account created successfully' });
+        res.status(201).json({ data : name, message : 'Account created successfully' });
 
     } catch (error) {
         console.log('Signup error',error)
-        res.status(500).json('Internal server error');
+        res.status(500).json({message : 'Internal server error'});
     }
 
 }

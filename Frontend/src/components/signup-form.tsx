@@ -7,6 +7,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2, UserPlus, Mail, Lock, User } from "lucide-react"
+import { signup } from '@/api/auth'
+import { toast } from "sonner"
+
 
 interface SignupFormProps {
   onSwitchToLogin: () => void
@@ -51,16 +54,33 @@ export function SignupForm({ onSwitchToLogin }: SignupFormProps) {
     if (!validateForm()) return
 
     setIsLoading(true)
+   const toastId = toast.loading('Please wait . . .');
 
-    
+    try {
+      const res = await signup(formData)
+      toast.success('Sign up success',{
+        description : `HI ${res.data}`,
+        id : toastId
+      });
+      onSwitchToLogin()
+      setSuccess(true)
+    } catch (error : any) {
+      console.log(error);
+      const validationErrors = error?.response?.data?.errors;
+      if (validationErrors && Array.isArray(validationErrors)) {
+        toast.dismiss(toastId);
+        validationErrors.forEach((err: any) => {
+          toast.error(err.msg || 'Validation error');
+        });
+      }else{
+        toast.error('Error',{
+          description : error?.message,
+          id : toastId
+        })
+      }
+    }
 
     setIsLoading(false)
-    setSuccess(true)
-
-    // Redirect to login after success
-    setTimeout(() => {
-      onSwitchToLogin()
-    }, 1500)
   }
 
   const handleInputChange = (field: string, value: string) => {

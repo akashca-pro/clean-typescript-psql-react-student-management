@@ -8,8 +8,16 @@ interface AuthDetails {
 }
 
 export const signup = async(payload : AuthDetails) : Promise<ApiResponse> => {
-    const res = await axiosInstance.post<ApiResponse>('signup',payload);
+  try {
+    const res = await axiosInstance.post<ApiResponse>("signup", payload);
     return res.data;
+  } catch (error: any) {
+    //   console.log(error);
+    if (error.response) {
+      throw error;
+    }
+    throw new Error(error);
+  }
 }
 
 export const login = async(payload : Omit<AuthDetails,'name'>) : Promise<ApiResponse> => {
